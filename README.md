@@ -1,21 +1,16 @@
 # psm4odes
-Generates Series Recurrence Code and high-order Taylor solutions for Ordinary Differential Equations in MATLAB
-by Richard D. Neidinger, Davidson College.
-Uses PSM to solve any ODE system of form y' = f(t,y) and y(t0) = y0.
-PSM stands for Power Series Method (or arbitrary order Taylor series).
-Accompanies article "Automatic Series Recurrence Relations for Ordinary
-Differential Equations" to be submitted to SIAM Review in 2024.
+Generates series recurrence code and high-order Taylor solutions for Ordinary Differential Equations (ODEs) in MATLAB  
+by Richard D. Neidinger, Davidson College.  
+Uses the Power Series Method (PSM) (or arbitrary order Taylor series) to solve any ODE system of form y' = f(t,y) and y(t0) = y0.  
+Accompanies article "Automatic Series Recurrence Relations for Ordinary Differential Equations" to be submitted to SIAM Review in 2024.
 
 # Contents and Usage:
 
-ODE is specified, just as for MATLAB ode45, by a function such as f.m, 
-two such provided examples are:
-fflame.m
-fdpendulum.m.
-WARNING: DO NOT preallocate the array (vector) output in the ODE function
-using zeros or explicit doubles, instead construct it by concatenating 
-variables or expressions or just preallocate with input y (all of whick can
-be overloaded with a trace object type).
+ODE is specified, just as for MATLAB ode45, by a function such as `f.m`, two such provided examples are:
+- fflame.m
+- fdpendulum.m.
+
+WARNING: DO NOT preallocate the array (vector) output in the ODE function using zeros or explicit doubles, instead construct it by concatenating variables or expressions or just preallocate with input y (all of whick can be overloaded with a trace object type).
 
 ODE software
 -----------------------
