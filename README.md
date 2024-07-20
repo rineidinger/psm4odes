@@ -36,16 +36,18 @@ SERIES software (automatically called as needed by above)
 
 Documentation and Examples
 --------------------------
-README.txt  This text file.
+- `README.md`  This text file.
 
-AutoSerRecur.pdf  Preprint article to accompany this repository.
+- `AutoSerRecur.pdf`  Preprint article to accompany this repository.
 
-examplependulum.m  Script to compare odepsmh with ode45 on fdpendulum.
-                   CALL:  examplependulum
-exampleflame.m  Script showing direct use of psm code (incl. symbolical)
-                CALL:  exampleflame
-rk4.m  Runge Kutta order 4 method for comparison.
+- `examplependulum.m`  Script to compare odepsmh with ode45 on fdpendulum.
+  * CALL:  `examplependulum`
+- `exampleflame.m`  Script showing direct use of psm code (incl. symbolical)
+  * CALL:  `exampleflame`
+- `rk4.m`  Runge Kutta order 4 method for comparison.
 
+Copyright
+---------
 Copyright 1/18/2021, Richard D. Neidinger, rineidinger@davidson.edu.
 This version 7/19/24 -- please contact Neidinger about bugs or feedback.
 Thanks to colleagues at JMU for encouragement and discussions.
