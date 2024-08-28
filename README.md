@@ -1,7 +1,7 @@
 # psm4odes
 by Richard D. Neidinger, Davidson College, 7/19/24.   
 In MATLAB, generates series recurrence code for use in the Power Series Method (PSM) (or arbitrary-order Taylor series) to solve any Ordinary Differential Equations (ODEs) system of form y' = f(t,y) and y(t0) = y0.  
-Accompanies article *Automatic Series Recurrence Relations for Ordinary Differential Equations* to be submitted to SIAM Review in 2024.
+Accompanies preprint article *Automatic Series Recurrence Relations for Ordinary Differential Equations*.
 
 # Contents and Usage:
 
