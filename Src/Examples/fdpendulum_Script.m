@@ -1,7 +1,7 @@
 % Example comparing odepsmh and odepsmJZ to ode45 for forced damped pendulum
-% Richard Neidinger, 1/18/2021 to 2/28/25
+% Richard Neidinger, 1/18/2021 to 3/5/25
 format compact
-format shorte
+format shortE
 
 tspan = [0,200];
 init = [0;2];  % y0 vector
@@ -33,10 +33,11 @@ dtac = tac(2:end) - tac(1:end-1);  % dt = h's for accurate ode45
 dtad = tad(2:end) - tad(1:end-1);  % dt of points for default ode45
 dtad = 4*dtad(1:4:end); % actual since ode45 uses Refine 4 by default (see Help on odeset)
 
-plot(yrk4(:,1),yrk4(:,2),'g',...
-     yad(:,1),yad(:,2),'b',...
-     yac(:,1),yac(:,2),'k',...
-     ypsm(:,1),ypsm(:,2),'r')
+colormap(lines(4)); % attempting four colors distinguishable by colorblind
+plot(yrk4(:,1),yrk4(:,2),...
+     yad(:,1),yad(:,2),...
+     yac(:,1),yac(:,2),...
+     ypsm(:,1),ypsm(:,2))
 legend(['rk4 h = ',num2str(stepsize)],'ode45 default','ode45 accurate',['odepsm h = ',num2str(stepsize)])
 ax = gca;
 ax.XTick = (-3:8)*pi;
