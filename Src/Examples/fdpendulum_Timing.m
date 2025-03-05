@@ -1,9 +1,9 @@
 % fdpendulum solver timings repeating for numreps
 % Example comparing odepsmh and odepsmJZ to ode45 for forced damped pendulum
 % Richard Neidinger, 1/18/2021 to 2/28/25
-numreps = 100;  % will average runtime over numreps calls of each solver
+numreps = 10;  % will average runtime over numreps calls of each solver
 format compact
-format shorte
+format shortE
 
 tspan = [0,200];
 init = [0;2];  % y0 vector
