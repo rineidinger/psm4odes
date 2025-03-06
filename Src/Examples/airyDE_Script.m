@@ -1,5 +1,5 @@
 % Series Method on airyDE.m: dydt = [ y(2); t*y(1) ];
-% Richard Neidinger 2/27/25
+% Richard Neidinger 3/6/25
 t0 = 0; tend = -10; % going in negative direction is more interesting plot
 tspan = [t0,tend];
 y0 = [1;0];  % [1;0] and [0;1] give the two linearly independent solutions
@@ -44,8 +44,9 @@ fprintf(['For tol ',num2str(tol),', ode45 used ',num2str(length(t45)-1),...
     num2str(degfortol),'.\n'])
 
 % The following four lines of code require and use Symbolic Toolbox
-% Comment out these four lines if Symbolic Toolbox is not installed.
-degsym = 15;  % degree of symbolic results
-symcoefs = airyDEseries(0,[sym('a'),sym('b')],degsym);
-disp('y coefs for y(0)=[a;b]:')
-disp(symcoefs(1,:))
+if license('test','Symbolic_Toolbox')
+    degsym = 15;  % degree of symbolic results
+    symcoefs = airyDEseries(0,[sym('a'),sym('b')],degsym);
+    disp('y coefs for y(0)=[a;b]:')
+    disp(symcoefs(1,:))
+end

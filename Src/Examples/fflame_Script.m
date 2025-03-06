@@ -1,7 +1,7 @@
 % Example using flame DE to show usage of psm4odes software
 % Models flame from lighting a match. A famously stiff DE.
 % https://www.mathworks.com/company/newsletters/articles/stiff-differential-equations.html
-% Richard Neidinger 2/26/25
+% Richard Neidinger 3/6/25
 y0 = 1e-4; % 1e-n is progressively harder for n = 1,2,3,4,5,6,7
 endt = 2/y0; % abrupt cliff around time 1/y0
 
@@ -14,11 +14,12 @@ makepsmcode(@fflame,1);  % writes or overwrites fflameseries.m
 
 % The following four lines of code require and use Symbolic Toolbox
 % showing how you can generate symbolic series coefficients
-% Comment out these four lines if Symbolic Toolbox is not installed.
-degsym = 5;  % degree of symbolic results
-symcoefs = fflameseries(0,sym('a'),degsym);  % y0 = sym('a');
-symcoefs = expand(symcoefs).'
-vpacoefs = fflameseries(0,vpa(y0),degsym).'  % default quadruple precision
+if license('test','Symbolic_Toolbox')
+    degsym = 5;  % degree of symbolic results
+    symcoefs = fflameseries(0,sym('a'),degsym);  % y0 = sym('a');
+    symcoefs = expand(symcoefs).'
+    vpacoefs = fflameseries(0,vpa(y0),degsym).'  % default quadruple precision
+end
 
 % one Maclaurin polynomial of degree deg
 coefs = fflameseries(0,y0,deg);
@@ -46,8 +47,8 @@ legend('ode45 default',...
        ['one poly deg = ',num2str(deg)],...
        ['odepsmh h = ',num2str(h),' deg = ',num2str(deg)],...
        ['odepsmJZ tol = ',num2str(tol)],...
-       ['ode15s tol = ',num2str(tol)],...
-       ['ode23s tol = ',num2str(tol)],...
+       ['ode15s tol = ',num2str(tolode)],...
+       ['ode23s tol = ',num2str(tolode)],...
        'location','Northwest');
 
 % report results
