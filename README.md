@@ -1,15 +1,15 @@
 # PSM4ODES
-by Richard D. Neidinger, Davidson College, 3/1/25.   
+by Richard D. Neidinger, Davidson College, 3/14/25.   
 In MATLAB, generates series recurrence code for use in the Power Series Method (PSM) (or arbitrary-order Taylor series) to solve any Ordinary Differential Equations (ODEs) system of form y' = f(t,y) and y(t0) = y0.  
 Accompanies preprint article *Automatic Series Recurrence Relations for Ordinary Differential Equations* and has a *userManual.pdf*.
 
 # Contents and Usage:
 
 PSM4ODES\Src\Functions folder contains the software codes and should be added to the MATLAB path by addpath command or Set Path environment button.   
-Define a DE file, say f.m, as is usually done for any MATLAB ODE solver, where f takes and returns column vectors. For example, y'' = sin(y2) uses y1 = y and y2 = y' in the system y1' = y2 and y2' = sin(y1^2). Avoid preallocating output with zeros or explicit doubles, as in  
+Define a DE file, say f.m, as is usually done for any MATLAB ODE solver, where f takes and returns column vectors. For example, y'' = sin(y2) uses y1 = y and y2 = y' in the system y1' = y2 and y2' = sin(y1^2). Avoid preallocating output with zeros or explicit doubles. This f.m file  
 &nbsp; &nbsp; &nbsp;   function dydt = f(t,y)  
 &nbsp; &nbsp; &nbsp;   dydt = [y(2); sin(y(1)^2)];  
-which works well. Codes that start with dydt = zeros(2,1) will fail but may be made compatible by changing the preallocation to dydt = y, so that dydt replicates the class of y in the overloaded execution of f that generates the series recurrence code. The name f and names of the variables in f.m can be anything though t and y will be used in the generated series code.
+which works well. Codes that start with dydt = zeros(2,1) will fail but may be made compatible by changing the preallocation to dydt = y, so that dydt replicates the class of y in the overloaded execution of f that generates the series recurrence code. The name f and names of the variables in f.m can be anything though t and y will be used in the generated series code. We expect and implement only scalar functions (so ^ not .^ in MATLAB).
 
 ODE software
 -----------------------
