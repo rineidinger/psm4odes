@@ -61,8 +61,8 @@ Many files are updated, often just cosmetically, with these more important updat
 - New versions of the accompanying paper and userManual in pdfs.
 - New folder of WorkPrecisionExamples.
 - Example timing now uses MATLAB's timeit function to average over several runs.
-- `odepsmh.m` calls `serieseval` to do same horners rule steps as coded before.
-- `odepsmJZ.m` has smaller minstep size 100*eps*(tend-t0).
+- `odepsmh.m` calls `serieseval` to do same Horner's rule steps as coded before.
+- `odepsmJZ.m` has smaller minstep size `100*eps*(tend-t0)`.
 - `serieseval.m` fixes bug needing size(coefs,2) instead of length when y dimensions exceed order of Taylor coefs.
 - `trace.m`
   - writes 18 (instead of 16) digits for any double given or computed in DE file (see userManual 2.3.1 Double precision constants).
