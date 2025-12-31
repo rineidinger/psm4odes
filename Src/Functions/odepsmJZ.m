@@ -17,7 +17,7 @@ function [t,y,deg] = odepsmJZ(fhandle,tspan,y0,tolerance)
 % where each row of t and y contain values at one step of the method.
 % Internally, y components will go down columns as used in f, before final
 % transpose for output.
-% Richard Neidinger 2/2/21...2/21/25
+% Richard Neidinger 2/2/21...2/21/25,10/17/25, 11/22/25
 t0 = tspan(1);
 tend = tspan(2);
 numDEs = length(y0);  % get number of DEs in f from y0
@@ -25,7 +25,7 @@ y0 = reshape(y0,[numDEs,1]);  % insure a column vector
 t = t0; % row vector that will grow by variable stepsize
 y = y0;  % y0 is first column, will augment more columns for each t
 hsign = sign(tend - t0);  % direction of time
-minstep = 2^-10; % minimum stepsize to prevent infinite loop
+minstep = 100*eps*(tend-t0); % minimum stepsize to prevent infinite loop
 minstepflag = false;
 
 seriesfuncname = [func2str(fhandle),'series'];
@@ -58,12 +58,13 @@ while hsign* (t(k) - tend) < 0
         end
     end
     h = min(h, abs(tend - t(k))); % only so last step hits tend
-    t(k+1) = t(k) + hsign*h;  % augment t vector
-    
-    % horners rule to evaluate polynomial in powers of (t-t(k)) at t(k+1)
+    h = hsign*h;
+    t(k+1) = t(k) + h;  % augment t vector
+    % horners rule to evaluate polynomial in powers of h = t(k+1) - t(k)
+    % avoiding subtraction (as in serieseval) that could lose significance
     val = coefs(:,deg+1);
     for m = deg:-1:1
-        val = val*hsign*h + coefs(:,m);
+        val = val*h + coefs(:,m);
     end
     y(:,k+1) = val;  % augment y array
     k = k+1;

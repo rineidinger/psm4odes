@@ -13,7 +13,7 @@ function [t,y] = odepsmh(fhandle,tspan,h,y0,deg)
 % where each row of t and y contain values at one step of the method.
 % Internally, y components will go down columns as used in f, before final
 % transpose for output.
-% Richard Neidinger 12/3/20...12/6/24 
+% Richard Neidinger 12/3/20...12/6/24...call to serieseval 10/17/25
 t0 = tspan(1);
 tend = tspan(2);
 if h*(tend - t0) < 0; h = -h; end  % match sign of h to direction
@@ -37,13 +37,7 @@ y = repmat(y0,1,numpts);
 % indexed by y(component, time)
 
 for k = 1:(numpts-1)
-    coefs = fseries(t(k),y(:,k),deg);  
-    % horners rule to evaluate polynomial in powers of (t(k+1)-t(k))
-    val = coefs(:,deg+1);
-    h = t(k+1)-t(k); % could differ on last step
-    for m = deg:-1:1
-        val = val*h + coefs(:,m);
-    end
-    y(:,k+1) = val;
+    coefs = fseries(t(k),y(:,k),deg);
+    y(:,k+1) = serieseval(coefs,t(k),t(k+1));
 end
 y = y.'; % transpose into output form

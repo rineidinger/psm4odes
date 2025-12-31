@@ -11,18 +11,19 @@ classdef trace
    %    reclist: cell array of strings relating how series can be combined
    % After evaluation, call
    %    [count, vallist, oplist, reclist] = trace.count_val
-   % by Richard Neidinger 1/11/21; rev. 10/26/22, formatting 7/1/24, 2/6/25
+   % by Richard Neidinger 1/11/21; 10/26/22,..12/23/25 (write 18 digits)
+   % 
    properties
       % One trace object simply holds the current value and operation count
-      val  % expression value after its operation/function
-      opcount % index of val in vallist maintained by count_val
+      val  % expression value after its operation/function; or t,y initial
+      opcount % index of val in vallist from count_val; or t,y flag
       tlinear % T/F: operations to this point are equivalent to at+b
               %   Boolean true=1 if series coefs of order >1 are zero. Will
               %   simplify code where dot product has only one nonzero term
    end 
    
    methods (Static)
-       function [op, val, code, rec]...
+       function [op, vals, initcode, reccode]...
                = count_val(value, opcell, reccell)
            % trace.count_val will append and/or return count and lists
            persistent count vallist oplist reclist
@@ -41,9 +42,9 @@ classdef trace
                end
            end
            op = count;  % return count and all persistent variable values
-           val = vallist;
-           code = oplist;
-           rec = reclist;
+           vals = vallist;
+           initcode = oplist;
+           reccode = reclist;
        end
        function opstr = name(i)
            % returns string 'T(1', 'U(5', or 'Y(5' for i = 0, 5, -5 resp.
@@ -85,8 +86,9 @@ classdef trace
              obj.opcount = 0; % indicates independent variable
              obj.tlinear = true;
          elseif role == 1
-             for i = 1:length(value)  % so each element of y vector is obj
-                % obj(i) implicitly calls the nargin == 0 case above
+             for i = length(value):-1:1  % each element of y vector is obj
+                % Reverse order to preallocate array of objects, first
+                % obj(i) implicitly calls the nargin == 0 case above.
                 obj(i).val = value(i);
                 obj(i).opcount = -i; % negatives indicate "y" variable
                 obj(i).tlinear = false;
@@ -110,13 +112,13 @@ classdef trace
          if ~isa(u,'trace') % assume u is a numerical scalar
              newval = u + v.val;
              vname = trace.name(v.opcount);
-             opstr = [num2str(u,16),' + ',vname,',1);'];
+             opstr = [num2str(u,18),' + ',vname,',1);'];
              recstr = [vname,',j);'];
              newtlinear = v.tlinear;
          elseif ~isa(v,'trace') % assume v is a numerical scalar
              newval = u.val + v;
              uname = trace.name(u.opcount);
-             opstr = [uname,',1) + ',num2str(v,16),';'];
+             opstr = [uname,',1) + ',num2str(v,18),';'];
              recstr = [uname,',j);'];
              newtlinear = u.tlinear;
          else  
@@ -150,13 +152,13 @@ classdef trace
          if ~isa(u,'trace') % assume u is a numerical scalar
              newval = u - v.val;
              vname = trace.name(v.opcount);
-             opstr = [num2str(u,16),' - ',vname,',1);'];
+             opstr = [num2str(u,18),' - ',vname,',1);'];
              recstr = ['-',vname,',j);'];
              newtlinear = v.tlinear;
          elseif ~isa(v,'trace') % assume v is a numerical scalar
              newval = u.val - v;
              uname = trace.name(u.opcount);
-             opstr = [uname,',1) - ',num2str(v,16),';'];
+             opstr = [uname,',1) - ',num2str(v,18),';'];
              recstr = [uname,',j);'];
              newtlinear = u.tlinear;
          else  
@@ -179,13 +181,13 @@ classdef trace
          hname = trace.nextname;
          if ~isa(u,'trace') % assume u is a scalar
              newval = u * v.val;
-             midstr = [num2str(u,16),' * ',trace.name(v.opcount)];
+             midstr = [num2str(u,18),' * ',trace.name(v.opcount)];
              opstr  = [hname,',1) = ',midstr,',1);'];
              recstr = [hname,',j) = ',midstr,',j);'];
              newtlinear = v.tlinear;
          elseif ~isa(v,'trace')
              newval = u.val * v;
-             midstr = [num2str(v,16),' * ',trace.name(u.opcount)];
+             midstr = [num2str(v,18),' * ',trace.name(u.opcount)];
              opstr =  [hname,',1) = ',midstr,',1);'];
              recstr = [hname,',j) = ',midstr,',j);'];
              newtlinear = u.tlinear;
@@ -209,7 +211,7 @@ classdef trace
          if ~isa(u,'trace') % assume u is a scalar
              newval = u / v.val;
              vname = trace.name(v.opcount);
-             opstr  = [hname,',1) = ',num2str(u,16),' / ',vname,',1);'];
+             opstr  = [hname,',1) = ',num2str(u,18),' / ',vname,',1);'];
              if v.tlinear
                  recstr = [hname,',j) = -',hname,',j-1) * ',vname,',2) / ',vname,',1);'];
              else
@@ -219,8 +221,8 @@ classdef trace
          elseif ~isa(v,'trace')
              newval = u.val / v;
              uname = trace.name(u.opcount);
-             opstr =  [hname,',1) = ',uname,',1) / ',num2str(v,16),';'];
-             recstr = [hname,',j) = ',uname,',j) / ',num2str(v,16),';'];
+             opstr =  [hname,',1) = ',uname,',1) / ',num2str(v,18),';'];
+             recstr = [hname,',j) = ',uname,',j) / ',num2str(v,18),';'];
              newtlinear = u.tlinear;
          else
              newval = u.val / v.val;
@@ -317,16 +319,16 @@ classdef trace
                  h = trace(newval, 2);
                  hname = trace.nextname;
                  uname = trace.name(u.opcount);
-                 opstr = [hname,',1) = ',uname,',1)^',num2str(r,16),';'];
+                 opstr = [hname,',1) = ',uname,',1)^',num2str(r,18),';'];
                  if u.tlinear
-                    recstart = [hname,',j) = (',num2str(r,16),'-(j-2))*'];
+                    recstart = [hname,',j) = (',num2str(r,18),'-(j-2))*'];
                     reccell = {[recstart,uname,',2)*',hname,',j-1) / ((j-1)*',uname,',1));']};
                  else
                     uprimestr = ['tempinprime = ( ',uname,',2:j) .* (1:(j-1)) ).'';'];
                     hprimestr = ['tempoutprime = ( ',hname,',2:(j-1)) .* (1:(j-2)) ).'';'];
                     cp1str = ['cp1 = ',hname,',(j-1):-1:1) * tempinprime;'];
                     cp2str = ['cp2 = ',uname,',(j-1):-1:2) * tempoutprime;'];
-                    recstr = [hname,',j) = ( ',num2str(r,16),'*cp1  - cp2 ) / ( (j-1)*',uname,',1) );'];
+                    recstr = [hname,',j) = ( ',num2str(r,18),'*cp1  - cp2 ) / ( (j-1)*',uname,',1) );'];
                     reccell = {uprimestr; hprimestr; cp1str; cp2str; recstr};
                  end
                  h.opcount = trace.count_val(newval, {opstr}, reccell);
@@ -401,7 +403,7 @@ classdef trace
          h.tlinear = false;
 
          newval = 1 + u.val^2;
-         v = trace(newval, 2);  % object probably never used, just atrings
+         v = trace(newval, 2);  % object probably never used, just strings
          opstr = [vname, ',1) = 1 + ', hname,',1)^2;'];
          recstr1 = ['tempprime = ( ',hname,',2:j) .* (1:(j-1)) ).'';'];
          recstr2 = [vname,',j) = 2*( ',hname,',(j-1):-1:1) * tempprime )/(j-1);'];
@@ -432,7 +434,7 @@ classdef trace
          h.tlinear = false;
 
          newval = 1 + u.val^2;
-         v = trace(newval, 2);  % object probably never used, just atrings
+         v = trace(newval, 2);  % object probably never used, just strings
          opstr = [vname, ',1) = 1 + ', hname,',1)^2;'];
          recstr1 = ['tempprime = ( ',hname,',2:j) .* (1:(j-1)) ).'';'];
          recstr2 = [vname,',j) = 2*( ',hname,',(j-1):-1:1) * tempprime )/(j-1);'];

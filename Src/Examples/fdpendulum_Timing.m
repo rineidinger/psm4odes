@@ -1,7 +1,6 @@
-% fdpendulum solver timings repeating for numreps
+% fdpendulum solver timings using timeit
 % Example comparing odepsmh and odepsmJZ to ode45 for forced damped pendulum
-% Richard Neidinger, 1/18/2021 to 2/28/25
-numreps = 10;  % will average runtime over numreps calls of each solver
+% Richard Neidinger, 1/18/2021 to 2/28/25, 10/14/25 using timeit
 format compact
 format shortE
 
@@ -13,59 +12,58 @@ stepsize = .6;  % for rk4 and odepsmh first setting
 % ac in variable names stands for accurate adaptive method
 % et in varoable names stands for elapsed time in sec
 
+% make code for all psm solvers, find time of code generation
+f4time = @() makepsmcode(@fdpendulum,2);
+etcode = timeit(f4time)  % timeit averages across many runs
+% this time is not included in timings for psm solvers
+
 % rk4 Runge Kutta order 4
-tic; for i=1:numreps
-    [trk4,yrk4] = rk4(@fdpendulum,tspan,stepsize,init); 
-end
-etrk = toc/numreps 
+[trk4,yrk4] = rk4(@fdpendulum,tspan,stepsize,init);
+f4time = @() rk4(@fdpendulum,tspan,stepsize,init); 
+etrk = timeit(f4time,2)
 
 % ode45 default options ('Refine' 4 interpolates four values for each step)
-tic; for i=1:numreps
-    [tad,yad] = ode45(@fdpendulum,tspan,init); 
-end
-etad = toc/numreps
+[tad,yad] = ode45(@fdpendulum,tspan,init);
+f4time = @() ode45(@fdpendulum,tspan,init);
+etad = timeit(f4time,2)
 
 % ode45 with most accurate RelTol allowed
 tolmin = 2.22045e-14;
 options = odeset('RelTol',tolmin,'AbsTol',tolmin,'Refine',1);
-tic; for i=1:numreps
-    [tac,yac] = ode45(@fdpendulum,tspan,init,options); 
-end
-etac = toc/numreps
+[tac,yac] = ode45(@fdpendulum,tspan,init,options); 
+f4time = @() ode45(@fdpendulum,tspan,init,options);
+etac = timeit(f4time,2)
+
 petac = 100; % percentage of ode45 accurate elapsed time
 petrk = 100*etrk/etac;
 petad = 100*etad/etac;
+petcode = 100*etcode/etac;
 
 % odepsmh
-makepsmcode(@fdpendulum,2); % do not include one-time writing series code
-tic; for i=1:numreps
-    [tpsm,ypsm] = odepsmh(@fdpendulum,tspan,stepsize,init,20); 
-end
-etpsm = toc/numreps
+[tpsm,ypsm] = odepsmh(@fdpendulum,tspan,stepsize,init,20); 
+f4time = @() odepsmh(@fdpendulum,tspan,stepsize,init,20); 
+etpsm = timeit(f4time,2)
 petpsm = 100*etpsm/etac;
 
 % odepsmh with lower stepsize to match ode45 accurate result
 stepsize2 = .25;
-tic; for i=1:numreps
-    [tpsm2,ypsm2] = odepsmh(@fdpendulum,tspan,stepsize2,init,20); 
-end
-etpsm2 = toc/numreps
+[tpsm2,ypsm2] = odepsmh(@fdpendulum,tspan,stepsize2,init,20); 
+f4time = @() odepsmh(@fdpendulum,tspan,stepsize2,init,20); 
+etpsm2 = timeit(f4time,2)
 petpsm2 = 100*etpsm2/etac;
 
 % odepsmJZ adaptive method with tolerance for high accuracy:
 % tolmin = 2.22045e-14; same as for smallest RelTol allowed by ode45
-tic; for i=1:numreps
-    [tpsmac,ypsmac,degac] = odepsmJZ(@fdpendulum,tspan,init,tolmin);
-end
-etpsmac = toc/numreps
+[tpsmac,ypsmac,degac] = odepsmJZ(@fdpendulum,tspan,init,tolmin);
+f4time = @() odepsmJZ(@fdpendulum,tspan,init,tolmin);
+etpsmac = timeit(f4time,3)
 petpsmac = 100*etpsmac/etac;
 
 % odepsmJZ adaptive method with tolerance for graphic viewing accuracy
 tol = 1e-3;
-tic; for i=1:numreps
-    [tpsmad,ypsmad,degad] = odepsmJZ(@fdpendulum,tspan,init,tol);
-end
-etpsmad = toc/numreps
+[tpsmad,ypsmad,degad] = odepsmJZ(@fdpendulum,tspan,init,tol);
+f4time = @() odepsmJZ(@fdpendulum,tspan,init,tol);
+etpsmad = timeit(f4time,3)
 petpsmad = 100*etpsmad/etac;
 
 % adaptive stepsizes
@@ -103,3 +101,4 @@ fprintf([' odepsmh deg 20',str],length(tpsm)-1, stepsize, ypsm(end,1),abs(ypsm(e
 fprintf([' odepsmh deg 20',str],length(tpsm2)-1, stepsize2, ypsm2(end,1),abs(ypsm2(end,1)-best),petpsm2);
 fprintf(['odepsmJZ deg %2d',str],degac,length(dtpsmac), mean(dtpsmac), ypsmac(end,1),abs(ypsmac(end,1)-best),petpsmac);
 fprintf(['odepsmJZ deg %2d',str],degad,length(dtpsmad), mean(dtpsmad), ypsmad(end,1),abs(ypsmad(end,1)-best),petpsmad);
+fprintf('One-time generation of series code for psm solvers takes rel time %4.1f%%.\n',petcode)
