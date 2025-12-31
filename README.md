@@ -1,5 +1,5 @@
 # PSM4ODES
-by Richard D. Neidinger, Davidson College, 3/14/25.   
+by Richard D. Neidinger, Davidson College, release 12/31/25.   
 In MATLAB, generates series recurrence code for use in the Power Series Method (PSM) (or arbitrary-order Taylor series) to solve any Ordinary Differential Equations (ODEs) system of form y' = f(t,y) and y(t0) = y0.  
 Accompanies preprint article *Automatic Series Recurrence Relations for Ordinary Differential Equations* and has a *userManual.pdf*.
 
@@ -12,7 +12,7 @@ Define a DE file, say f.m, as is usually done for any MATLAB ODE solver, where f
 works well. Codes that start with dydt = zeros(2,1) will fail but may be made compatible by changing the preallocation to dydt = y, so that dydt replicates the class of y in the overloaded execution of f that generates the series recurrence code. The name f and names of the variables in f.m can be anything though t and y will be used in the generated series code. We expect and implement only scalar functions (so ^ not .^ in MATLAB).
 
 ODE software
------------------------
+---------------
 - `odepsmh.m`    Solves ode by series to order deg with step-size h,  
   * CALL:  `[t,Y] = odepsmh(@f,[t0,tend],h,Y0,deg);`
 
@@ -30,8 +30,8 @@ SERIES software (automatically called as needed by above)
 - `trace.m`  Class of objects used by makepsmcode:  
   If t and y are trace objects, each operation (arithmetic or transcendental) in evaluation of f(t,y) is overloaded (as defined in trace.m) to write the corresponding code for the evaluation and for the series recurrence relation.
 
-Examples Folder Contents
---------------------------
+PSM4ODES\Src\Examples folder contents
+-------------------------------------
 - `airyDE.m`  defines system for Airy's equation.
 - `airyDE_Script.m`  shows use of series coefficients and odepsmJZ.
   
@@ -50,3 +50,20 @@ Examples Folder Contents
 - `fflame_Script.m`  compares solvers using low tolerance.
   
 - `rk4.m`  classicRunge Kutta order 4 method for comparison.
+  
+- `WorkPrecisionExamples` subfolder contains testing examples and diagram software.
+   - Follows and tests 5 DEs from *Test Set for IVP Solvers*,
+   - see details in our *userManual.pdf* that includes all resulting diagrams.
+ 
+Updates since March 2025 release
+---------------------------------
+Many files are updated, often just cosmetically, with these more important updates:
+- New versions of the accompanying paper and userManual in pdfs.
+- New folder of WorkPrecisionExamples.
+- Example timing now uses MATLAB's timeit function to average over several runs.
+- `odepsmh.m` calls `serieseval` to do same horners rule steps as coded before.
+- `odepsmJZ.m` has smaller minstep size 100*eps*(tend-t0).
+- `serieseval.m` fixes bug needing size(coefs,2) instead of length when y dimensions exceed order of Taylor coefs.
+- `trace.m`
+  - writes 18 (instead of 16) digits for any double given or computed in DE file (see userManual 2.3.1 Double precision constants).
+  - For y array of objects, constructor order is reversed to preallocate before assignments.
