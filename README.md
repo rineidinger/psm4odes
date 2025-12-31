@@ -58,7 +58,7 @@ PSM4ODES\Src\Examples folder contents
 Updates since March 2025 release
 ---------------------------------
 Many files are updated, often just cosmetically, with these more important updates:
-- New versions of the accompanying paper and userManual in pdfs.
+- New versions of the accompanying paper *AutoSerRecur.pdf* and *userManual.pdf*.
 - New folder of WorkPrecisionExamples.
 - Example timing now uses MATLAB's timeit function to average over several runs.
 - `odepsmh.m` calls `serieseval` to do same Horner's rule steps as coded before.
